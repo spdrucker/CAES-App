@@ -49,7 +49,7 @@ public class GPSInterface {
     private static class LocationService implements LocationListener, OnRequestPermissionsResultCallback {
 
         //The minimum distance to change updates in meters
-        private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 3; // 10 meters
+        private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 1; // 10 meters
 
         //The minimum time beetwen updates in milliseconds
         private static final long MIN_TIME_BW_UPDATES = 1000 * 5 * 1;//1000 * 60 * 1; // 1 minute
@@ -57,7 +57,6 @@ public class GPSInterface {
         private final static boolean forceNetwork = false;
 
         private LocationManager locationManager;
-        private Location location;
         private double longitude;
         private double latitude;
         private boolean isGPSEnabled;
@@ -128,7 +127,7 @@ public class GPSInterface {
                                 MIN_TIME_BW_UPDATES,
                                 MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
 
-                        updateLocation();
+                        updateCoordinates(locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER));
                     }
 
                     if (isGPSEnabled) {
@@ -136,7 +135,7 @@ public class GPSInterface {
                                 MIN_TIME_BW_UPDATES,
                                 MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
 
-                        updateLocation();
+                        updateCoordinates(locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER));
                     }
                 }
             } catch (Exception ex) {
@@ -145,29 +144,11 @@ public class GPSInterface {
             }
         }
 
-        private void updateLocation() {
-            if (Build.VERSION.SDK_INT >= 23 &&
-                    ContextCompat.checkSelfPermission(this.mContext, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                    ContextCompat.checkSelfPermission(this.mContext, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                return;
-            }
-
-            if (locationManager != null) {
-                if (isNetworkEnabled) {
-                    location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                }
-                if (isGPSEnabled) {
-                    location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                }
-                updateCoordinates();
-            }
-        }
-
-        private void updateCoordinates() {
+        private void updateCoordinates(Location location) {
             this.latitude = location.getLatitude();
             this.longitude = location.getLongitude();
 
-            System.out.printf("New coords: %f lat, %f long\n", this.latitude, this.longitude);
+            System.out.printf("New coords: %.12f lat, %.12f long\n", this.latitude, this.longitude);
         }
 
         public double getLatitude(){
@@ -187,7 +168,9 @@ public class GPSInterface {
         public void onLocationChanged(Location location) {
             // do stuff here with location object
             System.out.println("Location changed: " + location.getProvider());
-            updateLocation();
+            System.out.println("Accuracy: "+location.getAccuracy());
+            System.out.println("Altitude: "+location.getAltitude());
+            updateCoordinates(location);
         }
 
         @Override
