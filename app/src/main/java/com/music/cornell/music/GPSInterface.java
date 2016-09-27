@@ -52,7 +52,7 @@ public class GPSInterface {
         private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 1; // 10 meters
 
         //The minimum time beetwen updates in milliseconds
-        private static final long MIN_TIME_BW_UPDATES = 1000 * 5 * 1;//1000 * 60 * 1; // 1 minute
+        private static final long MIN_TIME_BW_UPDATES = 1000 * 1 * 1;//1000 * 60 * 1; // 1 minute
 
         private final static boolean forceNetwork = false;
 
@@ -108,6 +108,8 @@ public class GPSInterface {
                 this.latitude = 0.0;
                 this.locationManager = (LocationManager) this.mContext.getSystemService(Context.LOCATION_SERVICE);
 
+                System.out.println(this.locationManager.getAllProviders());
+
                 // Get GPS and network status
                 this.isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
                 this.isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
@@ -145,6 +147,7 @@ public class GPSInterface {
         }
 
         private void updateCoordinates(Location location) {
+            // update coords with a low pass filter with alpha being inversely proportional to accuracy
             this.latitude = location.getLatitude();
             this.longitude = location.getLongitude();
 
@@ -168,6 +171,7 @@ public class GPSInterface {
         public void onLocationChanged(Location location) {
             // do stuff here with location object
             System.out.println("Location changed: " + location.getProvider());
+            // radius of 68% confidence
             System.out.println("Accuracy: "+location.getAccuracy());
             System.out.println("Altitude: "+location.getAltitude());
             updateCoordinates(location);
