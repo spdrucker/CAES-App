@@ -37,7 +37,7 @@ public class GPSInterface {
     /**
      * Singleton implementation
      *
-     * @return
+     * @return the location service object to get the location data
      */
     private static LocationService getLocationManager(Context context, Activity activity) {
         if (instance == null) {
@@ -46,6 +46,9 @@ public class GPSInterface {
         return instance;
     }
 
+    /**
+     * Inner location service class that queries the gps and network for location data
+     */
     private static class LocationService implements LocationListener, OnRequestPermissionsResultCallback {
 
         //The minimum distance to change updates in meters
@@ -54,6 +57,7 @@ public class GPSInterface {
         //The minimum time beetwen updates in milliseconds
         private static final long MIN_TIME_BW_UPDATES = 1000 * 1 * 1;//1000 * 60 * 1; // 1 minute
 
+        // false if you should force using the network
         private final static boolean forceNetwork = false;
 
         private LocationManager locationManager;
@@ -63,6 +67,7 @@ public class GPSInterface {
         private boolean isNetworkEnabled;
         private boolean locationServiceAvailable;
 
+        // kind of like an enum for the permission callback
         private final int REQUEST_LOCATION = 1;
 
         private Context mContext;
@@ -75,11 +80,14 @@ public class GPSInterface {
             this.mContext = context;
             this.mActivity = activity;
 
+            // if the gps coarse location permission isn't allowed yet, ask the user to give permission
             if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
                 ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
                         REQUEST_LOCATION);
             }
+
+            // if the gps fine location permission isn't allowed yet, ask the user to give permission
             if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
                 ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
@@ -97,6 +105,7 @@ public class GPSInterface {
         @TargetApi(23)
         private void initLocationService() {
 
+            // check if the permissions are set in android version 23 and up
             if (Build.VERSION.SDK_INT >= 23 &&
                     ContextCompat.checkSelfPermission(this.mContext, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                     ContextCompat.checkSelfPermission(this.mContext, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -104,6 +113,7 @@ public class GPSInterface {
             }
 
             try {
+                // initialize the latitude and longitude
                 this.longitude = 0.0;
                 this.latitude = 0.0;
                 this.locationManager = (LocationManager) this.mContext.getSystemService(Context.LOCATION_SERVICE);
@@ -118,12 +128,13 @@ public class GPSInterface {
 
                 if (forceNetwork) isGPSEnabled = false;
 
+                // cannot get location
                 if (!isNetworkEnabled && !isGPSEnabled) {
-                    // cannot get location
                     this.locationServiceAvailable = false;
                 } else {
                     this.locationServiceAvailable = true;
 
+                    // request updates from the network if it is enabled
                     if (isNetworkEnabled) {
                         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
                                 MIN_TIME_BW_UPDATES,
@@ -132,6 +143,7 @@ public class GPSInterface {
                         updateCoordinates(locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER));
                     }
 
+                    // request updates from the gps if it is enabled
                     if (isGPSEnabled) {
                         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                                 MIN_TIME_BW_UPDATES,
@@ -146,8 +158,13 @@ public class GPSInterface {
             }
         }
 
+        /**
+         * update the coordinates with the new location data
+         * @param location the new location data object
+         */
         private void updateCoordinates(Location location) {
             // update coords with a low pass filter with alpha being inversely proportional to accuracy
+            // or use a weighted average over 3 updates using the accuracy
             this.latitude = location.getLatitude();
             this.longitude = location.getLongitude();
 
@@ -165,7 +182,6 @@ public class GPSInterface {
         public boolean isActive() {
             return this.locationServiceAvailable;
         }
-
 
         @Override
         public void onLocationChanged(Location location) {
@@ -194,6 +210,7 @@ public class GPSInterface {
 
         @Override
         public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+            // check if the requested permission callback is for a location request
             if (requestCode == this.REQUEST_LOCATION) {
                 for (int i = 0; i < grantResults.length; i++) {
                     if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
