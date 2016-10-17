@@ -7,11 +7,12 @@ package com.music.cornell.music;
 
 
 import android.media.MediaPlayer;
+import android.media.PlaybackParams;
 
 public class Audio {
     public static MediaPlayer mediaPlayer1 = new MediaPlayer();
     public static MediaPlayer mediaPlayer2 = new MediaPlayer();
-    
+
 
     public void startSound(MediaPlayer m) {
         m.start();
@@ -41,6 +42,12 @@ public class Audio {
             b.setVolume(n,n);
             n+=.000004;
         }
+    }
+
+    public void matchSpeed(MediaPlayer a, float speedA, float speedB) {
+        //a.setPlaybackParams(AUDIO_FALLBACK_MODE_DEFAULT, 1.0f, 1.0f*speedB/speedA);
+
+
     }
 
 }
