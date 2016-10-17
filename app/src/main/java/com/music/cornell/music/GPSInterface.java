@@ -20,6 +20,7 @@ import android.support.v4.content.ContextCompat;
  */
 
 public class GPSInterface {
+    //lorem ipsum
     private LocationService service;
 
     private static LocationService instance = null;
