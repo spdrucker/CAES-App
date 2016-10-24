@@ -165,8 +165,18 @@ public class GPSInterface {
         private void updateCoordinates(Location location) {
             // update coords with a low pass filter with alpha being inversely proportional to accuracy
             // or use a weighted average over 3 updates using the accuracy
-            this.latitude = location.getLatitude();
-            this.longitude = location.getLongitude();
+            if(location.getAccuracy() <= 20) {
+                this.latitude = location.getLatitude();
+                this.longitude = location.getLongitude();
+            }
+            else{
+                System.out.println("Warning: Accuracy less than 20 m");
+                double constant = 20/location.getAccuracy();
+                double deltaLat = location.getLatitude() - this.latitude;
+                double deltaLong = location.getLongitude() - this.longitude;
+                this.latitude = this.latitude + constant*deltaLat;
+                this.longitude = this.longitude + constant*deltaLong;
+            }
 
             System.out.printf("New coords: %.12f lat, %.12f long\n", this.latitude, this.longitude);
         }
