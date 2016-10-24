@@ -13,5 +13,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         gps = new GPSInterface(this, this);
+
+        LocationHolder locations = LocationHolder.getHolder();
     }
 }
