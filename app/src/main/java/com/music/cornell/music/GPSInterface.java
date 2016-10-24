@@ -52,10 +52,10 @@ public class GPSInterface {
     private static class LocationService implements LocationListener, OnRequestPermissionsResultCallback {
 
         //The minimum distance to change updates in meters
-        private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 1; // 10 meters
+        private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 0; // 10 meters
 
         //The minimum time beetwen updates in milliseconds
-        private static final long MIN_TIME_BW_UPDATES = 1000 * 1 * 1;//1000 * 60 * 1; // 1 minute
+        private static final long MIN_TIME_BW_UPDATES = 1000 * 1 * 0;//1000 * 60 * 1; // 1 minute
 
         // false if you should force using the network
         private final static boolean forceNetwork = false;
