@@ -25,11 +25,33 @@ public class ReadDatabase {
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(input));
 
+        ArrayList<Place> places = new ArrayList<>();
+
+        String[] lines = new String[4];
+        int i = 0;
+
         String line;
         while ((line = reader.readLine()) != null) {
-            System.out.println(line);
+            lines[i] = line;
+            i++;
+            if(line.equals("")) {
+                // campus
+
+                i = 0;
+            } else if(i >= 4) {
+                // building
+                Location l = null;
+                String[] points = lines[1].split(" ");
+                if(points[1].startsWith("(")) {
+                    l = new Rectangle(points);
+                } else {
+                    l = new Circle(points);
+                }
+                places.add(new Place(lines[0], l, lines[2], lines[3].split(" ")));
+                i = 0;
+            }
         }
 
-        return null;
+        return places;
     }
 }

@@ -14,6 +14,6 @@ public class MainActivity extends AppCompatActivity {
 
         gps = new GPSInterface(this, this);
 
-        LocationHolder locations = LocationHolder.getHolder();
+        LocationHolder locations = LocationHolder.getHolder(this);
     }
 }

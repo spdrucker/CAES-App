@@ -5,5 +5,5 @@ package com.music.cornell.music;
  */
 
 public interface Location {
-    public boolean isInLocation(float lat, float lng);
+    public boolean isInLocation(double lat, double lng);
 }
