@@ -68,17 +68,9 @@ public class LocationHolder {
         double pLat = p.getValueAsDouble(columnTitles.get("Latitude"));
         double pLng = p.getValueAsDouble(columnTitles.get("Longitude"));
         double radius = p.getValueAsDouble(columnTitles.get("Average radius"));
-        double horzDist = degreesLngToMeters(pLng-lng);
-        double vertDist = degreesLatToMeters(pLat-lat);
+        double horzDist = pLng-lng;
+        double vertDist = pLat-lat;
         return  horzDist*horzDist+vertDist*vertDist <= radius*radius;
-    }
-
-    private double degreesLatToMeters(double lat) {
-        return lat/111082.97;
-    }
-
-    private double degreesLngToMeters(double lng) {
-        return lng/82198.98;
     }
 
     public int columnIndex(String s) {
