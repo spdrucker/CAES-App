@@ -6,19 +6,17 @@ package com.music.cornell.music;
 
 public class Place {
 
-    private String name;
-    private Location location;
-    private String campus;
-    private String[] instruments;
+    private String[] values;
 
-    public Place(String name, Location location, String campus, String[] instruments) {
-        this.name = name;
-        this.location = location;
-        this.campus = campus;
-        this.instruments = instruments;
+    public Place(String[] v) {
+        this.values = v;
     }
 
-    public boolean isInPlace(double lat, double lng) {
-        return this.location.isInLocation(lat, lng);
+    public String getValue(int i) {
+        return this.values[i];
+    }
+
+    public double getValueAsDouble(int i) {
+        return Double.parseDouble(this.values[i]);
     }
 }
