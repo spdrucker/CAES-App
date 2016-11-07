@@ -25,6 +25,6 @@ public class MainActivity extends AppCompatActivity {
 
         double drumIntensity = p.getValueAsDouble(locations.columnIndex("drum1"));
 
-//        MediaPlayer mp1 = MediaPlayer.create(this,);
+        MediaPlayer mp1 = MediaPlayer.create(this, R.raw.drums_0);
     }
 }
