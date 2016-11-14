@@ -35,6 +35,7 @@ public class LocationHolder {
             BufferedReader reader = new BufferedReader(new InputStreamReader(input));
 
             locations = new ArrayList<>();
+            columnTitles = new HashMap<>();
 
             String line = reader.readLine();
             if (line != null) {

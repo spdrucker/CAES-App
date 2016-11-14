@@ -31,7 +31,8 @@ public class GPSInterface {
     }
 
     public double[] getPosition() {
-        return new double[]{this.service.getLatitude(), this.service.getLongitude()};
+//        return new double[]{this.service.getLatitude(), this.service.getLongitude()};
+        return new double[]{42.446800,-76.484193}; // cornell store
     }
 
     /**
