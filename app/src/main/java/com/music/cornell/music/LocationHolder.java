@@ -21,6 +21,8 @@ public class LocationHolder {
     private ArrayList<Place> locations;
     private HashMap<String, Integer> columnTitles;
 
+    private double radiusIncrease = 0.0002;
+
     public static LocationHolder getHolder(Context ctx){
         if(LocationHolder.instance == null){
             LocationHolder.instance = new LocationHolder(ctx);
@@ -68,7 +70,7 @@ public class LocationHolder {
     private boolean inLocation(Place p, double lat, double lng) {
         double pLat = p.getValueAsDouble(columnTitles.get("Latitude"));
         double pLng = p.getValueAsDouble(columnTitles.get("Longitude"));
-        double radius = p.getValueAsDouble(columnTitles.get("Average radius"));
+        double radius = p.getValueAsDouble(columnTitles.get("Average radius"))+radiusIncrease;
         double horzDist = pLng-lng;
         double vertDist = pLat-lat;
         return  horzDist*horzDist+vertDist*vertDist <= radius*radius;
