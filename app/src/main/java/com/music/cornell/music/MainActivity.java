@@ -31,10 +31,10 @@ public class MainActivity extends AppCompatActivity {
 
         final LocationHolder[] locations = new LocationHolder[5];
         locations[0] = new LocationHolder(this, R.raw.central_data, "Average radius", "Latitude", "Longitude");
-        locations[1] = new LocationHolder(this, R.raw.central_data, "Average radius", "Latitude", "Longitude");
-        locations[2] = new LocationHolder(this, R.raw.central_data, "Average radius", "Latitude", "Longitude");
-        locations[3] = new LocationHolder(this, R.raw.central_data, "Average radius", "Latitude", "Longitude");
-        locations[4] = new LocationHolder(this, R.raw.central_data, "Average radius", "Latitude", "Longitude");
+        locations[1] = new LocationHolder(this, R.raw.ag_quad_data, "Radius", "Latitude", "Longitude");
+        locations[2] = new LocationHolder(this, R.raw.eng_quad_data, "Radius", "Latitude", "Longitude");
+        locations[3] = new LocationHolder(this, R.raw.north_data, "Radius", "Latitude", "Longitude");
+        locations[4] = new LocationHolder(this, R.raw.west_data, "Radius", "Latitude", "Longitude");
 
         gpsText = "NA";
 

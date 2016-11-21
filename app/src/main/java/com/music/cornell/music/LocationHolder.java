@@ -47,7 +47,9 @@ public class LocationHolder {
             line = reader.readLine();
             while (line != null) {
                 String[] columns = line.split(",");
-                locations.add(new Place(columns));
+                if(columns.length > 0) {
+                    locations.add(new Place(columns));
+                }
                 line = reader.readLine();
             }
         } catch (IOException e) {
