@@ -1,18 +1,16 @@
 package com.music.cornell.music;
 
 import android.media.MediaPlayer;
-import android.media.PlaybackParams;
 import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.widget.TextView;
-import android.os.Handler;
 
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.logging.LogRecord;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -20,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView gps_output;
     private Handler mHandler;
     private String gpsText;
+    private Place lastPlace = null;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -35,6 +34,15 @@ public class MainActivity extends AppCompatActivity {
         locations[2] = new LocationHolder(this, R.raw.eng_quad_data, "Radius", "Latitude", "Longitude");
         locations[3] = new LocationHolder(this, R.raw.north_data, "Radius", "Latitude", "Longitude");
         locations[4] = new LocationHolder(this, R.raw.west_data, "Radius", "Latitude", "Longitude");
+
+        final MediaPlayer[] sounds = new MediaPlayer[3];
+        sounds[0] = MediaPlayer.create(this, R.raw.violin_);
+        sounds[1] = MediaPlayer.create(this, R.raw.Trumpet_);
+        sounds[2] = MediaPlayer.create(this, R.raw.cello_);
+
+        for(int i = 0; i < sounds.length; i++){
+            Audio.startSound(sounds[i]);
+        }
 
         gpsText = "NA";
 
@@ -60,6 +68,18 @@ public class MainActivity extends AppCompatActivity {
                         String buildingName = p.getValue(locations[i].columnIndex("Building"));
                         gpsText = "Location: " + pos[0] + "," + pos[1] + "\nCurrently In: " + (p == null ? "NA" : buildingName);
                         mHandler.obtainMessage(1).sendToTarget();
+
+                        double[] intensities = new double[3];
+                        intensities[0] = p.getValueAsDouble(locations[i].columnIndex("violin"));
+                        intensities[1] = p.getValueAsDouble(locations[i].columnIndex("trumpet"));
+                        intensities[2] = p.getValueAsDouble(locations[i].columnIndex("cello"));
+
+                        if(lastPlace == null || lastPlace != p) {
+                            lastPlace = p;
+                            for(int j = 0; j < sounds.length; j++){
+                                Audio.fadeIn(sounds[i], (float) intensities[i]);
+                            }
+                        }
                         break;
                     }
                 }
