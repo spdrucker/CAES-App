@@ -15,24 +15,22 @@ import java.util.HashMap;
 
 public class LocationHolder {
 
-    // Singleton pattern
-    private static LocationHolder instance;
-
     private ArrayList<Place> locations;
     private HashMap<String, Integer> columnTitles;
 
     private double radiusIncrease = 0.0002;
 
-    public static LocationHolder getHolder(Context ctx){
-        if(LocationHolder.instance == null){
-            LocationHolder.instance = new LocationHolder(ctx);
-        }
-        return LocationHolder.instance;
-    }
+    private String radiusColumn;
+    private String latitudeColumn;
+    private String longitudeColumn;
 
-    private LocationHolder(Context ctx){
+    public LocationHolder(Context ctx, int resourceID, String rCol, String latCol, String lngCol){
         try {
-            InputStream input = ctx.getResources().openRawResource(R.raw.central_data);
+            InputStream input = ctx.getResources().openRawResource(resourceID);
+
+            this.radiusColumn = rCol;
+            this.latitudeColumn = latCol;
+            this.longitudeColumn = lngCol;
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(input));
 
@@ -68,9 +66,9 @@ public class LocationHolder {
     }
 
     private boolean inLocation(Place p, double lat, double lng) {
-        double pLat = p.getValueAsDouble(columnTitles.get("Latitude"));
-        double pLng = p.getValueAsDouble(columnTitles.get("Longitude"));
-        double radius = p.getValueAsDouble(columnTitles.get("Average radius"))+radiusIncrease;
+        double pLat = p.getValueAsDouble(columnTitles.get(this.latitudeColumn));
+        double pLng = p.getValueAsDouble(columnTitles.get(this.longitudeColumn));
+        double radius = p.getValueAsDouble(columnTitles.get(this.radiusColumn))+radiusIncrease;
         double horzDist = pLng-lng;
         double vertDist = pLat-lat;
         return  horzDist*horzDist+vertDist*vertDist <= radius*radius;

@@ -18,7 +18,6 @@ public class MainActivity extends AppCompatActivity {
 
     private GPSInterface gps;
     private TextView gps_output;
-    private LocationHolder locations;
     private Handler mHandler;
     private String gpsText;
 
@@ -30,7 +29,12 @@ public class MainActivity extends AppCompatActivity {
 
         gps = new GPSInterface(this, this);
 
-        locations = LocationHolder.getHolder(this);
+        final LocationHolder[] locations = new LocationHolder[5];
+        locations[0] = new LocationHolder(this, R.raw.central_data, "Average radius", "Latitude", "Longitude");
+        locations[1] = new LocationHolder(this, R.raw.central_data, "Average radius", "Latitude", "Longitude");
+        locations[2] = new LocationHolder(this, R.raw.central_data, "Average radius", "Latitude", "Longitude");
+        locations[3] = new LocationHolder(this, R.raw.central_data, "Average radius", "Latitude", "Longitude");
+        locations[4] = new LocationHolder(this, R.raw.central_data, "Average radius", "Latitude", "Longitude");
 
         gpsText = "NA";
 
@@ -49,11 +53,16 @@ public class MainActivity extends AppCompatActivity {
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
-                System.out.println("Here");
-                double[] pos = gps.getPosition();
-                Place p = locations.getCurrentPlace(pos[0], pos[1]);
-                gpsText = "Location: "+pos[0]+","+pos[1]+"\nCurrently In: "+(p == null ? "NA" : p.getValue(locations.columnIndex("Building")));
-                mHandler.obtainMessage(1).sendToTarget();
+                for(int i = 0; i < locations.length; i++) {
+                    double[] pos = gps.getPosition();
+                    Place p = locations[i].getCurrentPlace(pos[0], pos[1]);
+                    if(p != null) {
+                        String buildingName = p.getValue(locations[i].columnIndex("Building"));
+                        gpsText = "Location: " + pos[0] + "," + pos[1] + "\nCurrently In: " + (p == null ? "NA" : buildingName);
+                        mHandler.obtainMessage(1).sendToTarget();
+                        break;
+                    }
+                }
             }
         };
 
