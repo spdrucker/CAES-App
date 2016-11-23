@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
         final MediaPlayer[] sounds = new MediaPlayer[3];
         sounds[0] = MediaPlayer.create(this, R.raw.violin_);
-        sounds[1] = MediaPlayer.create(this, R.raw.Trumpet_);
+        sounds[1] = MediaPlayer.create(this, R.raw.trumpet_);
         sounds[2] = MediaPlayer.create(this, R.raw.cello_);
 
         for(int i = 0; i < sounds.length; i++){
