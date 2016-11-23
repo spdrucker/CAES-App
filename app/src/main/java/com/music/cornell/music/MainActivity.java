@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
                         if(lastPlace == null || lastPlace != p) {
                             lastPlace = p;
                             for(int j = 0; j < sounds.length; j++){
-                                Audio.fadeIn(sounds[i], (float) intensities[i]);
+                                Audio.fadeIn(sounds[j], (float) intensities[j]);
                             }
                         }
                         break;

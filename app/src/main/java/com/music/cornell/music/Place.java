@@ -17,6 +17,10 @@ public class Place {
     }
 
     public double getValueAsDouble(int i) {
-        return Double.parseDouble(this.values[i]);
+        if(i < 0){
+            return 0.0;
+        } else {
+            return Double.parseDouble(this.values[i]);
+        }
     }
 }

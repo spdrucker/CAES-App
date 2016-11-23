@@ -77,6 +77,6 @@ public class LocationHolder {
     }
 
     public int columnIndex(String s) {
-        return columnTitles.get(s);
+        return (columnTitles.get(s) == null ? -1 : columnTitles.get(s));
     }
 }
