@@ -19,6 +19,10 @@ public class MainActivity extends AppCompatActivity {
     private Handler mHandler;
     private String gpsText;
     private Place lastPlace = null;
+    private double[] intensitiesTo;
+    private double[] intensitiesAt;
+
+    private double loopSeconds = 10.0;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -40,9 +44,25 @@ public class MainActivity extends AppCompatActivity {
         sounds[1] = MediaPlayer.create(this, R.raw.trumpet_);
         sounds[2] = MediaPlayer.create(this, R.raw.cello_);
 
+        intensitiesTo = new double[sounds.length];
+        intensitiesAt = new double[sounds.length];
+
         for(int i = 0; i < sounds.length; i++){
             Audio.startSound(sounds[i]);
+            intensitiesAt[i] = 0.0;
         }
+
+        TimerTask loopTask = new TimerTask() {
+            @Override
+            public void run() {
+                for (int j = 0; j < sounds.length; j++) {
+                    sounds[j].seekTo(0);
+                }
+            }
+        };
+
+        Timer loopTime = new Timer();
+        loopTime.schedule(loopTask, 0, (int) (loopSeconds*1000));
 
         gpsText = "NA";
 
@@ -69,15 +89,28 @@ public class MainActivity extends AppCompatActivity {
                         gpsText = "Location: " + pos[0] + "," + pos[1] + "\nCurrently In: " + (p == null ? "NA" : buildingName);
                         mHandler.obtainMessage(1).sendToTarget();
 
-                        double[] intensities = new double[3];
-                        intensities[0] = p.getValueAsDouble(locations[i].columnIndex("violin"));
-                        intensities[1] = p.getValueAsDouble(locations[i].columnIndex("trumpet"));
-                        intensities[2] = p.getValueAsDouble(locations[i].columnIndex("cello"));
+                        intensitiesTo[0] = p.getValueAsDouble(locations[i].columnIndex("violin"));
+                        intensitiesTo[1] = p.getValueAsDouble(locations[i].columnIndex("trumpet"));
+                        intensitiesTo[2] = p.getValueAsDouble(locations[i].columnIndex("cello"));
 
                         if(lastPlace == null || lastPlace != p) {
                             lastPlace = p;
-                            for(int j = 0; j < sounds.length; j++){
-                                Audio.fadeIn(sounds[j], (float) intensities[j]);
+
+                            for(int vol = 0; vol < 100; vol++) {
+                                for (int j = 0; j < sounds.length; j++) {
+                                    if(intensitiesAt[j] < intensitiesTo[j]) {
+                                        intensitiesAt[j]+=0.01;
+                                    } else if(intensitiesAt[j] > intensitiesTo[j]) {
+                                        intensitiesAt[j]-=0.01;
+                                    }
+                                    sounds[j].setVolume((float) intensitiesAt[j], (float) intensitiesAt[j]);
+                                }
+
+                                try {
+                                    Thread.sleep(10);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
                             }
                         }
                         break;

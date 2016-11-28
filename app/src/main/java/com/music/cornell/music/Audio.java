@@ -25,7 +25,7 @@ public class Audio {
 
     public static void startSound(MediaPlayer m) {
         m.start();
-        m.setLooping(true);
+//        m.setLooping(true);
         m.setVolume(0,0);
     }//play sound (volume = 0)
 
@@ -33,7 +33,12 @@ public class Audio {
         float n = 0;
         while(n <= vol) {
             m.setVolume(n,n);
-            n+=.000004;
+            n+=.01f;
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }//increase volume to vol (0-vol)
 
@@ -41,7 +46,12 @@ public class Audio {
         float n = 0;
         while (n <= vol) {
             m.setVolume(vol - n, vol - n);
-            n += .000004;
+            n+=.01f;
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }//decrease volume to 0
 
@@ -50,13 +60,23 @@ public class Audio {
         if(newVol >= vol) {
             while (n <= newVol - vol) {
                 m.setVolume(vol + n, vol + n);
-                n += .000004;
+                n+=.01f;
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
         else {
             while (n <= vol - newVol) {
                 m.setVolume(vol - n, vol - n);
-                n += .000004;
+                n+=.01f;
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -69,7 +89,12 @@ public class Audio {
                 a.setVolume(volA-n, volA-n);
             if(n <= volB)
                 b.setVolume(n,n);
-            n+=.000004;
+            n+=.01f;
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }//simultaniously increase and decrease volume of two mediaPlayers
 
