@@ -15,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_below="@+id/gps_info"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="80dp"
         android:layout_height="match_parent"
         android:background="@android:color/holo_blue_light" />
 
@@ -25,6 +25,15 @@
         android:layout_height="wrap_content"
         android:id="@+id/gps_info"
         android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:text="Toggle Map"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/button"
+        android:layout_marginTop="20dp"
+        android:layout_below="@+id/gps_info"
         android:layout_alignParentStart="true" />
 
 </RelativeLayout>

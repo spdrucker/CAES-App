@@ -7,6 +7,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.Timer;
@@ -74,6 +76,19 @@ public class MainActivity extends AppCompatActivity {
         for(int i = 0; i < locations.length; i++) {
             mapView.addLocation(locations[i]);
         }
+
+        final Button button = (Button) findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if(mapView.getVisibility() == View.INVISIBLE) {
+                    mapView.setVisibility(View.VISIBLE);
+                } else {
+                    mapView.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
+
+        mapView.setVisibility(View.INVISIBLE);
 
         textHandler = new Handler() {
             public void handleMessage(Message msg) {
