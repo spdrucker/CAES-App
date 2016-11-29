@@ -56,27 +56,28 @@ public class MapView extends SurfaceView {
         double canvasXCent = canvas.getWidth()/2;
         double canvasYCent = canvas.getHeight()/2;
 
-        for(int i = 0; i < this.locations.size(); i++) {
-            LocationHolder l = this.locations.get(i);
-            for(int j = 0; j < l.getLocations().size(); j++) {
-                double latDiff = l.getLocations().get(j).getValueAsDouble(l.getLatColumn()) - lat;
-                double lngDiff = l.getLocations().get(j).getValueAsDouble(l.getLongColumn()) - lng;
-                double rad = l.getLocations().get(j).getValueAsDouble(l.getRadiusColumn());
+        if(this != null && this.locations != null) {
+            for (int i = 0; i < this.locations.size(); i++) {
+                LocationHolder l = this.locations.get(i);
+                for (int j = 0; j < l.getLocations().size(); j++) {
+                    double latDiff = l.getLocations().get(j).getValueAsDouble(l.getLatColumn()) - lat;
+                    double lngDiff = l.getLocations().get(j).getValueAsDouble(l.getLongColumn()) - lng;
+                    double rad = l.getLocations().get(j).getValueAsDouble(l.getRadiusColumn());
 
-                latDiff *= degreesToPixels;
-                lngDiff *= degreesToPixels;
-                rad *= degreesToPixels;
+                    latDiff *= degreesToPixels;
+                    lngDiff *= degreesToPixels;
+                    rad *= degreesToPixels;
 
-                latDiff *= scale;
-                lngDiff *= scale;
-                rad *= scale;
+                    latDiff *= scale;
+                    lngDiff *= scale;
+                    rad *= scale;
 
-                paint.setColor(Color.GREEN);
-                drawOval(canvas, paint, lngDiff+canvasXCent, canvasYCent-latDiff, rad);
-                paint.setColor(Color.BLACK);
-                paint.setTextSize(28.0f);
-                canvas.drawText(l.getLocations().get(j).getValue(l.getNameColumn()), (float) (lngDiff+canvasXCent-rad), (float) (canvasYCent-latDiff), paint);
-//                canvas.drawOval((float) (canvas.getWidth()/2+latDiff), (float) (canvas.getHeight()/2+lngDiff), (float) (rad), (float) (rad), textPaint);
+                    paint.setColor(Color.GREEN);
+                    drawOval(canvas, paint, lngDiff + canvasXCent, canvasYCent - latDiff, rad);
+                    paint.setColor(Color.BLACK);
+                    paint.setTextSize(28.0f);
+                    canvas.drawText(l.getLocations().get(j).getValue(l.getNameColumn()), (float) (lngDiff + canvasXCent - rad), (float) (canvasYCent - latDiff), paint);
+                }
             }
         }
 
