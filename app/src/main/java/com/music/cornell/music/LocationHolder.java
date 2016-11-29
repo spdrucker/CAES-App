@@ -1,6 +1,7 @@
 package com.music.cornell.music;
 
 import android.content.Context;
+import android.location.Location;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -55,6 +56,22 @@ public class LocationHolder {
         } catch (IOException e) {
             System.out.printf("There was an error reading the file.");
         }
+    }
+
+    public ArrayList<Place> getLocations() {
+        return this.locations;
+    }
+
+    public int getRadiusColumn() {
+        return this.columnTitles.get(this.radiusColumn);
+    }
+
+    public int getLatColumn() {
+        return this.columnTitles.get(this.latitudeColumn);
+    }
+
+    public int getLongColumn() {
+        return this.columnTitles.get(this.longitudeColumn);
     }
 
     public Place getCurrentPlace(double lat, double lng) {

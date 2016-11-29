@@ -16,6 +16,7 @@ public class MainActivity extends AppCompatActivity {
 
     private GPSInterface gps;
     private TextView gps_output;
+    private MapView mapView;
     private Handler mHandler;
     private String gpsText;
     private Place lastPlace = null;
@@ -74,6 +75,12 @@ public class MainActivity extends AppCompatActivity {
         };
 
         gps_output = (TextView)findViewById(R.id.gps_info);
+
+        mapView = (MapView) findViewById(R.id.mapView);
+        for(int i = 0; i < locations.length; i++) {
+            mapView.addLocation(locations[i]);
+        }
+
 //        gps_output.post
 
         final MainActivity mainActivity = this;
@@ -83,6 +90,10 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 for(int i = 0; i < locations.length; i++) {
                     double[] pos = gps.getPosition();
+                    mapView.setLat(pos[0]);
+                    mapView.setLng(pos[1]);
+//                    mapView.getHolder().lockCanvas()
+
                     Place p = locations[i].getCurrentPlace(pos[0], pos[1]);
                     if(p != null) {
                         String buildingName = p.getValue(locations[i].columnIndex("Building"));
