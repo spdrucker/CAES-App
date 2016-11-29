@@ -17,7 +17,8 @@ public class MainActivity extends AppCompatActivity {
     private GPSInterface gps;
     private TextView gps_output;
     private MapView mapView;
-    private Handler mHandler;
+    private Handler textHandler;
+    private Handler redrawHandler;
     private String gpsText;
     private Place lastPlace = null;
     private double[] intensitiesTo;
@@ -34,11 +35,11 @@ public class MainActivity extends AppCompatActivity {
         gps = new GPSInterface(this, this);
 
         final LocationHolder[] locations = new LocationHolder[5];
-        locations[0] = new LocationHolder(this, R.raw.central_data, "Average radius", "Latitude", "Longitude");
-        locations[1] = new LocationHolder(this, R.raw.ag_quad_data, "Radius", "Latitude", "Longitude");
-        locations[2] = new LocationHolder(this, R.raw.eng_quad_data, "Radius", "Latitude", "Longitude");
-        locations[3] = new LocationHolder(this, R.raw.north_data, "Radius", "Latitude", "Longitude");
-        locations[4] = new LocationHolder(this, R.raw.west_data, "Radius", "Latitude", "Longitude");
+        locations[0] = new LocationHolder(this, R.raw.central_data, "Average radius", "Latitude", "Longitude", "Building");
+        locations[1] = new LocationHolder(this, R.raw.ag_quad_data, "Radius", "Latitude", "Longitude", "Building");
+        locations[2] = new LocationHolder(this, R.raw.eng_quad_data, "Radius", "Latitude", "Longitude", "Building");
+        locations[3] = new LocationHolder(this, R.raw.north_data, "Radius", "Latitude", "Longitude", "Building");
+        locations[4] = new LocationHolder(this, R.raw.west_data, "Radius", "Latitude", "Longitude", "Building");
 
         final MediaPlayer[] sounds = new MediaPlayer[3];
         sounds[0] = MediaPlayer.create(this, R.raw.violin_);
@@ -67,13 +68,6 @@ public class MainActivity extends AppCompatActivity {
 
         gpsText = "NA";
 
-        mHandler = new Handler() {
-            public void handleMessage(Message msg) {
-                System.out.println(gpsText);
-                gps_output.setText(gpsText);
-            }
-        };
-
         gps_output = (TextView)findViewById(R.id.gps_info);
 
         mapView = (MapView) findViewById(R.id.mapView);
@@ -81,24 +75,34 @@ public class MainActivity extends AppCompatActivity {
             mapView.addLocation(locations[i]);
         }
 
-//        gps_output.post
+        textHandler = new Handler() {
+            public void handleMessage(Message msg) {
+                System.out.println(gpsText);
+                gps_output.setText(gpsText);
+            }
+        };
+
+        redrawHandler = new Handler() {
+            public void handleMessage(Message msg) {
+                mapView.invalidate();
+            }
+        };
 
         final MainActivity mainActivity = this;
 
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
+                double[] pos = gps.getPosition();
+                mapView.setLat(pos[0]);
+                mapView.setLng(pos[1]);
+                redrawHandler.obtainMessage(1).sendToTarget();
                 for(int i = 0; i < locations.length; i++) {
-                    double[] pos = gps.getPosition();
-                    mapView.setLat(pos[0]);
-                    mapView.setLng(pos[1]);
-//                    mapView.getHolder().lockCanvas()
-
                     Place p = locations[i].getCurrentPlace(pos[0], pos[1]);
                     if(p != null) {
                         String buildingName = p.getValue(locations[i].columnIndex("Building"));
                         gpsText = "Location: " + pos[0] + "," + pos[1] + "\nCurrently In: " + (p == null ? "NA" : buildingName);
-                        mHandler.obtainMessage(1).sendToTarget();
+                        textHandler.obtainMessage(1).sendToTarget();
 
                         intensitiesTo[0] = p.getValueAsDouble(locations[i].columnIndex("violin"));
                         intensitiesTo[1] = p.getValueAsDouble(locations[i].columnIndex("trumpet"));

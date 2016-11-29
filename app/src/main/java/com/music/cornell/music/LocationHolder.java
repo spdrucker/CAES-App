@@ -24,14 +24,16 @@ public class LocationHolder {
     private String radiusColumn;
     private String latitudeColumn;
     private String longitudeColumn;
+    private String nameColumn;
 
-    public LocationHolder(Context ctx, int resourceID, String rCol, String latCol, String lngCol){
+    public LocationHolder(Context ctx, int resourceID, String rCol, String latCol, String lngCol, String nCol){
         try {
             InputStream input = ctx.getResources().openRawResource(resourceID);
 
             this.radiusColumn = rCol;
             this.latitudeColumn = latCol;
             this.longitudeColumn = lngCol;
+            this.nameColumn = nCol;
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(input));
 
@@ -72,6 +74,10 @@ public class LocationHolder {
 
     public int getLongColumn() {
         return this.columnTitles.get(this.longitudeColumn);
+    }
+
+    public int getNameColumn() {
+        return this.columnTitles.get(this.nameColumn);
     }
 
     public Place getCurrentPlace(double lat, double lng) {

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.RectF;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
@@ -45,15 +46,16 @@ public class MapView extends SurfaceView {
     protected void onDraw(Canvas canvas){
         super.onDraw(canvas);
 
-        Paint textPaint = new Paint();
+        Paint paint = new Paint();
 
         if(scale == 0.0f) {
             scale = Math.max(canvas.getWidth(), canvas.getHeight())/1000.0f;
-            System.out.println(scale);
+            System.out.println("scale:" + scale);
         }
 
+        double canvasXCent = canvas.getWidth()/2;
+        double canvasYCent = canvas.getHeight()/2;
 
-        textPaint.setColor(Color.GREEN);
         for(int i = 0; i < this.locations.size(); i++) {
             LocationHolder l = this.locations.get(i);
             for(int j = 0; j < l.getLocations().size(); j++) {
@@ -69,18 +71,31 @@ public class MapView extends SurfaceView {
                 lngDiff *= scale;
                 rad *= scale;
 
-                canvas.drawOval((float) (canvas.getWidth()/2+latDiff), (float) (canvas.getHeight()/2+lngDiff), (float) (rad), (float) (rad), textPaint);
+                paint.setColor(Color.GREEN);
+                drawOval(canvas, paint, lngDiff+canvasXCent, canvasYCent-latDiff, rad);
+                paint.setColor(Color.BLACK);
+                paint.setTextSize(28.0f);
+                canvas.drawText(l.getLocations().get(j).getValue(l.getNameColumn()), (float) (lngDiff+canvasXCent-rad), (float) (canvasYCent-latDiff), paint);
+//                canvas.drawOval((float) (canvas.getWidth()/2+latDiff), (float) (canvas.getHeight()/2+lngDiff), (float) (rad), (float) (rad), textPaint);
             }
         }
 
-        textPaint.setColor(Color.RED);
-        canvas.drawOval(canvas.getWidth()/2,canvas.getHeight()/2, 100*scale, 100*scale, textPaint);
+        paint.setColor(Color.RED);
+        double radius = 20*scale;
+        drawOval(canvas, paint, canvasXCent, canvasYCent, radius);
 
-        System.out.println("drawing"+lat+","+lng);
+    }
+
+    private void drawOval(Canvas canvas, Paint paint, double xCent, double yCent, double rad) {
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+            canvas.drawOval((float) (xCent-rad), (float) (yCent-rad), (float) (xCent+rad), (float) (yCent+rad), paint);
+        } else{
+            RectF mRectF = new RectF((float) (xCent-rad), (float) (yCent-rad), (float) (xCent+rad), (float) (yCent+rad));
+            canvas.drawOval(mRectF, paint);
+        }
     }
 
     public void setLat(double l) {
-        System.out.println("Lat set");
         this.lat = l;
     }
 
