@@ -16,6 +16,10 @@ import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
 
+    // TODO lock rotation to portrait
+    // TODO fix multiple songs being out of sync
+    // TODO Don't restart when switching buildings, put loop creator inside new campus settor
+
     // indicies:
     // 0 is central sounds
     // 1 is ag quad
@@ -36,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Timer currentTimer;
 
-    private double loopSeconds[] = {10.0};
+    private double loopSeconds[] = {236.31};
 
     private int currentCampus = -1;
 
@@ -71,6 +75,9 @@ public class MainActivity extends AppCompatActivity {
                 // intialize all intensities to 0s
                 intensitiesAt[i] = new double[sounds[i].length];
                 intensitiesTo[i] = new double[sounds[i].length];
+            } else {
+                intensitiesAt[i] = new double[0];
+                intensitiesTo[i] = new double[0];
             }
         }
 
@@ -186,17 +193,20 @@ public class MainActivity extends AppCompatActivity {
                 currentTimer.cancel();
             }
 
-            // set the current campus target intensities to 0
-            for(int i = 0; i < sounds[currentCampus].length; i++) {
-                intensitiesTo[currentCampus][i] = 0;
-            }
+            if(currentCampus != -1){
+                // set the current campus target intensities to 0
+                for(int i = 0; i < sounds[currentCampus].length; i++) {
+                    intensitiesTo[currentCampus][i] = 0;
+                }
 
-            // fade out the current campus songs
-            fadeCurrentSounds();
+                System.out.println("fading current");
+                // fade out the current campus songs
+                fadeCurrentSounds();
 
-            // stop the current campus sounds
-            for(int i = 0; i < sounds[currentCampus].length; i++) {
-                sounds[currentCampus][i].stop();
+                // stop the current campus sounds
+                for(int i = 0; i < sounds[currentCampus].length; i++) {
+                    sounds[currentCampus][i].stop();
+                }
             }
 
             currentCampus = newCamp;
@@ -204,11 +214,12 @@ public class MainActivity extends AppCompatActivity {
             // start the new campus sounds
             for(int i = 0; i < sounds[currentCampus].length; i++) {
                 sounds[currentCampus][i].start();
+                sounds[currentCampus][i].setLooping(false);
                 sounds[currentCampus][i].setVolume(0,0);
             }
-        }
 
-        fadeCurrentSounds();
+            System.out.println("started new sounds");
+        }
 
 //        for(int j = 0; j < sounds[i].length; j++) {
 //            Audio.startSound(sounds[i][j]);
@@ -219,7 +230,10 @@ public class MainActivity extends AppCompatActivity {
         TimerTask loopTask = new TimerTask() {
             @Override
             public void run() {
+                System.out.println("looped");
                 for (int j = 0; j < sounds[currentCampus].length; j++) {
+                    System.out.println(sounds[currentCampus][j].getDuration()+","+sounds[currentCampus][j].getCurrentPosition());
+                    sounds[currentCampus][j].start();
                     sounds[currentCampus][j].seekTo(0);
                 }
             }
@@ -227,6 +241,10 @@ public class MainActivity extends AppCompatActivity {
 
         currentTimer = new Timer();
         currentTimer.schedule(loopTask, 0, (int) (loopSeconds[currentCampus]*1000));
+
+        fadeCurrentSounds();
+
+        System.out.println("faded new sounds");
     }
 
     // fade the current sounds to their necessary positions
@@ -239,12 +257,12 @@ public class MainActivity extends AppCompatActivity {
                     intensitiesAt[currentCampus][i]-=0.01;
                 }
                 sounds[currentCampus][i].setVolume((float) intensitiesAt[currentCampus][i], (float) intensitiesAt[currentCampus][i]);
+            }
 
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }

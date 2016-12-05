@@ -50,7 +50,7 @@ public class MapView extends SurfaceView {
 
         if(scale == 0.0f) {
             scale = Math.max(canvas.getWidth(), canvas.getHeight())/1000.0f;
-            System.out.println("scale:" + scale);
+//            System.out.println("scale:" + scale);
         }
 
         double canvasXCent = canvas.getWidth()/2;
