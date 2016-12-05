@@ -13,4 +13,10 @@ public class MediaFactory {
 
         return cent;
     }
+
+    public static String[] getCentralSoundNames() {
+        String[] names = new String[15];
+
+        return names;
+    }
 }

@@ -23,10 +23,12 @@ public class MainActivity extends AppCompatActivity {
     private Handler redrawHandler;
     private String gpsText;
     private Place lastPlace = null;
-    private double[] intensitiesTo;
-    private double[] intensitiesAt;
+    private double[][] intensitiesTo;
+    private double[][] intensitiesAt;
 
     private double loopSeconds = 10.0;
+
+    private int currentCampus = 0;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -43,24 +45,29 @@ public class MainActivity extends AppCompatActivity {
         locations[3] = new LocationHolder(this, R.raw.north_data, "Radius", "Latitude", "Longitude", "Building");
         locations[4] = new LocationHolder(this, R.raw.west_data, "Radius", "Latitude", "Longitude", "Building");
 
-        final MediaPlayer[] sounds = new MediaPlayer[3];
-        sounds[0] = MediaPlayer.create(this, R.raw.violin_);
-        sounds[1] = MediaPlayer.create(this, R.raw.trumpet_);
-        sounds[2] = MediaPlayer.create(this, R.raw.cello_);
+        final MediaPlayer[][] sounds = new MediaPlayer[1][];
+        sounds[0] = MediaFactory.createCentralSounds();
+//        sounds[0] = MediaPlayer.create(this, R.raw.violin_);
+//        sounds[1] = MediaPlayer.create(this, R.raw.trumpet_);
+//        sounds[2] = MediaPlayer.create(this, R.raw.cello_);
 
-        intensitiesTo = new double[sounds.length];
-        intensitiesAt = new double[sounds.length];
+        intensitiesTo = new double[sounds.length][];
+        intensitiesAt = new double[sounds.length][];
 
         for(int i = 0; i < sounds.length; i++){
-            Audio.startSound(sounds[i]);
-            intensitiesAt[i] = 0.0;
+            intensitiesAt[i] = new double[sounds[i].length];
+
+            for(int j = 0; j < sounds[i].length; j++) {
+                Audio.startSound(sounds[i][j]);
+                intensitiesAt[i][j] = 0.0;
+            }
         }
 
         TimerTask loopTask = new TimerTask() {
             @Override
             public void run() {
-                for (int j = 0; j < sounds.length; j++) {
-                    sounds[j].seekTo(0);
+                for (int j = 0; j < sounds[currentCampus].length; j++) {
+                    sounds[currentCampus][j].seekTo(0);
                 }
             }
         };
