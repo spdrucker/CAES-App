@@ -16,6 +16,13 @@ import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
 
+    // indicies:
+    // 0 is central sounds
+    // 1 is ag quad
+    // 2 is eng quad
+    // 3 is north
+    // 4 is west
+
     private GPSInterface gps;
     private TextView gps_output;
     private MapView mapView;
@@ -25,10 +32,15 @@ public class MainActivity extends AppCompatActivity {
     private Place lastPlace = null;
     private double[][] intensitiesTo;
     private double[][] intensitiesAt;
+    private MediaPlayer[][] sounds;
 
-    private double loopSeconds = 10.0;
+    private Timer currentTimer;
 
-    private int currentCampus = 0;
+    private double loopSeconds[] = {10.0};
+
+    private int currentCampus = -1;
+
+    private int numCampuses = 5;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -38,42 +50,27 @@ public class MainActivity extends AppCompatActivity {
 
         gps = new GPSInterface(this, this);
 
-        final LocationHolder[] locations = new LocationHolder[5];
+        final LocationHolder[] locations = new LocationHolder[numCampuses];
         locations[0] = new LocationHolder(this, R.raw.central_data, "Average radius", "Latitude", "Longitude", "Building");
         locations[1] = new LocationHolder(this, R.raw.ag_quad_data, "Radius", "Latitude", "Longitude", "Building");
         locations[2] = new LocationHolder(this, R.raw.eng_quad_data, "Radius", "Latitude", "Longitude", "Building");
         locations[3] = new LocationHolder(this, R.raw.north_data, "Radius", "Latitude", "Longitude", "Building");
         locations[4] = new LocationHolder(this, R.raw.west_data, "Radius", "Latitude", "Longitude", "Building");
 
-        final MediaPlayer[][] sounds = new MediaPlayer[1][];
+        sounds = new MediaPlayer[numCampuses][];
         sounds[0] = MediaFactory.createCentralSounds();
-//        sounds[0] = MediaPlayer.create(this, R.raw.violin_);
-//        sounds[1] = MediaPlayer.create(this, R.raw.trumpet_);
-//        sounds[2] = MediaPlayer.create(this, R.raw.cello_);
+
+        final String[][] soundNames = new String[numCampuses][];
+        soundNames[0] = MediaFactory.getCentralSoundNames();
 
         intensitiesTo = new double[sounds.length][];
         intensitiesAt = new double[sounds.length][];
 
         for(int i = 0; i < sounds.length; i++){
+            // intialize to 0s
             intensitiesAt[i] = new double[sounds[i].length];
-
-            for(int j = 0; j < sounds[i].length; j++) {
-                Audio.startSound(sounds[i][j]);
-                intensitiesAt[i][j] = 0.0;
-            }
+            intensitiesTo[i] = new double[sounds[i].length];
         }
-
-        TimerTask loopTask = new TimerTask() {
-            @Override
-            public void run() {
-                for (int j = 0; j < sounds[currentCampus].length; j++) {
-                    sounds[currentCampus][j].seekTo(0);
-                }
-            }
-        };
-
-        Timer loopTime = new Timer();
-        loopTime.schedule(loopTask, 0, (int) (loopSeconds*1000));
 
         gpsText = "NA";
 
@@ -126,21 +123,30 @@ public class MainActivity extends AppCompatActivity {
                         gpsText = "Location: " + pos[0] + "," + pos[1] + "\nCurrently In: " + (p == null ? "NA" : buildingName);
                         textHandler.obtainMessage(1).sendToTarget();
 
-                        intensitiesTo[0] = p.getValueAsDouble(locations[i].columnIndex("violin"));
-                        intensitiesTo[1] = p.getValueAsDouble(locations[i].columnIndex("trumpet"));
-                        intensitiesTo[2] = p.getValueAsDouble(locations[i].columnIndex("cello"));
+                        // set the new target intensities
+                        for(int j = 0; j < intensitiesTo.length; j++) {
+                            for(int k = 0; k < intensitiesTo[j].length; k++) {
+                                if(j == i) {
+                                    intensitiesTo[j][k] = p.getValueAsDouble(locations[i].columnIndex(soundNames[j][k]));
+                                } else {
+                                    intensitiesTo[j][k] = 0;
+                                }
+                            }
+                        }
 
                         if(lastPlace == null || lastPlace != p) {
                             lastPlace = p;
 
                             for(int vol = 0; vol < 100; vol++) {
                                 for (int j = 0; j < sounds.length; j++) {
-                                    if(intensitiesAt[j] < intensitiesTo[j]) {
-                                        intensitiesAt[j]+=0.01;
-                                    } else if(intensitiesAt[j] > intensitiesTo[j]) {
-                                        intensitiesAt[j]-=0.01;
+                                    for(int k = 0; k < sounds[j].length; k++) {
+                                        if(intensitiesAt[j][k] < intensitiesTo[j][k]) {
+                                            intensitiesAt[j][k]+=0.01;
+                                        } else if(intensitiesAt[j][k] > intensitiesTo[j][k]) {
+                                            intensitiesAt[j][k]-=0.01;
+                                        }
+                                        sounds[j][k].setVolume((float) intensitiesAt[j][k], (float) intensitiesAt[j][k]);
                                     }
-                                    sounds[j].setVolume((float) intensitiesAt[j], (float) intensitiesAt[j]);
                                 }
 
                                 try {
@@ -170,5 +176,85 @@ public class MainActivity extends AppCompatActivity {
 //        MediaPlayer mp1 = MediaPlayer.create(this, R.raw.sampleaccoustic);
 //        mp1.start();
 
+    }
+
+    public void startTimer(int newCamp) {
+        if(newCamp != currentCampus) {
+            if(currentTimer != null) {
+                currentTimer.cancel();
+            }
+
+            // set the current campus target intensities to 0
+            for(int i = 0; i < sounds[currentCampus].length; i++) {
+                intensitiesTo[currentCampus][i] = 0;
+            }
+
+            // fade out the current campus songs
+            for(int vol = 0; vol < 100; vol++) {
+                for(int i = 0; i < sounds[currentCampus].length; i++) {
+                    if(intensitiesAt[currentCampus][i] < intensitiesTo[currentCampus][i]) {
+                        intensitiesAt[currentCampus][i]+=0.01;
+                    } else if(intensitiesAt[currentCampus][i] > intensitiesTo[currentCampus][i]) {
+                        intensitiesAt[currentCampus][i]-=0.01;
+                    }
+                    sounds[currentCampus][i].setVolume((float) intensitiesAt[currentCampus][i], (float) intensitiesAt[currentCampus][i]);
+
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            // stop the current campus sounds
+            for(int i = 0; i < sounds[currentCampus].length; i++) {
+                sounds[currentCampus][i].stop();
+            }
+
+            currentCampus = newCamp;
+
+            // start the new campus sounds
+            for(int i = 0; i < sounds[currentCampus].length; i++) {
+                sounds[currentCampus][i].start();
+                sounds[currentCampus][i].setVolume(0,0);
+            }
+        }
+
+        // fade the current sounds to their necessary positions
+        for(int vol = 0; vol < 100; vol++) {
+            for(int i = 0; i < sounds[currentCampus].length; i++) {
+                if(intensitiesAt[currentCampus][i] < intensitiesTo[currentCampus][i]) {
+                    intensitiesAt[currentCampus][i]+=0.01;
+                } else if(intensitiesAt[currentCampus][i] > intensitiesTo[currentCampus][i]) {
+                    intensitiesAt[currentCampus][i]-=0.01;
+                }
+                sounds[currentCampus][i].setVolume((float) intensitiesAt[currentCampus][i], (float) intensitiesAt[currentCampus][i]);
+
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+//        for(int j = 0; j < sounds[i].length; j++) {
+//            Audio.startSound(sounds[i][j]);
+//            intensitiesAt[i][j] = 0.0;
+//        }
+
+        // set the new looper
+        TimerTask loopTask = new TimerTask() {
+            @Override
+            public void run() {
+                for (int j = 0; j < sounds[currentCampus].length; j++) {
+                    sounds[currentCampus][j].seekTo(0);
+                }
+            }
+        };
+
+        currentTimer = new Timer();
+        currentTimer.schedule(loopTask, 0, (int) (loopSeconds[currentCampus]*1000));
     }
 }
