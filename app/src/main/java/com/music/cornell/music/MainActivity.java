@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         gps = new GPSInterface(this, this);
 
         final LocationHolder[] locations = new LocationHolder[numCampuses];
-        locations[0] = new LocationHolder(this, R.raw.central_data, "Average radius", "Latitude", "Longitude", "Building");
+        locations[0] = new LocationHolder(this, R.raw.central_data_songs, "Average radius", "Latitude", "Longitude", "Building");
         locations[1] = new LocationHolder(this, R.raw.ag_quad_data, "Radius", "Latitude", "Longitude", "Building");
         locations[2] = new LocationHolder(this, R.raw.eng_quad_data, "Radius", "Latitude", "Longitude", "Building");
         locations[3] = new LocationHolder(this, R.raw.north_data, "Radius", "Latitude", "Longitude", "Building");
@@ -67,9 +67,11 @@ public class MainActivity extends AppCompatActivity {
         intensitiesAt = new double[numCampuses][];
 
         for(int i = 0; i < sounds.length; i++){
-            // intialize all intensities to 0s
-            intensitiesAt[i] = new double[sounds[i].length];
-            intensitiesTo[i] = new double[sounds[i].length];
+            if(sounds[i] != null) {
+                // intialize all intensities to 0s
+                intensitiesAt[i] = new double[sounds[i].length];
+                intensitiesTo[i] = new double[sounds[i].length];
+            }
         }
 
         gpsText = "NA";
