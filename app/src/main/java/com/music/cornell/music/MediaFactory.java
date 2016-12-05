@@ -1,5 +1,6 @@
 package com.music.cornell.music;
 
+import android.content.Context;
 import android.media.MediaPlayer;
 
 /**
@@ -8,23 +9,23 @@ import android.media.MediaPlayer;
 
 public class MediaFactory {
 
-    public static MediaPlayer[] createCentralSounds() {
+    public static MediaPlayer[] createCentralSounds(Context context) {
         MediaPlayer[] cent = new MediaPlayer[15];
-        cent[0] = MediaPlayer.create(this, r.raw.the_cornell_theme);
-        cent[1] = MediaPlayer.create(this, r.raw.aap_theme);
-        cent[2] = MediaPlayer.create(this, r.raw.gold_keys);
-        cent[3] = MediaPlayer.create(this, r.raw.grail_uris);
-        cent[4] = MediaPlayer.create(this, r.raw.olin_bass);
-        cent[5] = MediaPlayer.create(this, r.raw.organ);
-        cent[6] = MediaPlayer.create(this, r.raw.physics_trumpet);
-        cent[7] = MediaPlayer.create(this, r.raw.piano_store);
-        cent[8] = MediaPlayer.create(this, r.raw.psb);
-        cent[9] = MediaPlayer.create(this, r.raw.rockefeller);
-        cent[10] = MediaPlayer.create(this, r.raw.sage_bass);
-        cent[11] = MediaPlayer.create(this, r.raw.statler_swing);
-        cent[12] = MediaPlayer.create(this, r.raw.uris_hall);
-        cent[13] = MediaPlayer.create(this, r.raw.ives);
-        cent[14] = MediaPlayer.create(this, r.raw.teagle);
+        cent[0] = MediaPlayer.create(context, R.raw.the_cornell_theme);
+        cent[1] = MediaPlayer.create(context, R.raw.aap_theme);
+        cent[2] = MediaPlayer.create(context, R.raw.gold_keys);
+        cent[3] = MediaPlayer.create(context, R.raw.grail_uris);
+        cent[4] = MediaPlayer.create(context, R.raw.olin_bass);
+        cent[5] = MediaPlayer.create(context, R.raw.organ);
+        cent[6] = MediaPlayer.create(context, R.raw.physics_trumpet);
+        cent[7] = MediaPlayer.create(context, R.raw.piano_store);
+        cent[8] = MediaPlayer.create(context, R.raw.psb);
+        cent[9] = MediaPlayer.create(context, R.raw.rockefeller);
+        cent[10] = MediaPlayer.create(context, R.raw.sage_bass);
+        cent[11] = MediaPlayer.create(context, R.raw.statler_swing);
+        cent[12] = MediaPlayer.create(context, R.raw.uris_hall);
+        cent[13] = MediaPlayer.create(context, R.raw.ives);
+        cent[14] = MediaPlayer.create(context, R.raw.teagle);
 
         return cent;
     }
