@@ -5,6 +5,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -62,18 +63,23 @@ public class MainActivity extends AppCompatActivity {
         locations[3] = new LocationHolder(this, R.raw.north_data, "Radius", "Latitude", "Longitude", "Building");
         locations[4] = new LocationHolder(this, R.raw.west_data, "Radius", "Latitude", "Longitude", "Building");
 
+        // get all of the sound files
         sounds = new MediaPlayer[numCampuses][];
         sounds[0] = MediaFactory.createCentralSounds(this);
+        sounds[3] = MediaFactory.createNorthSounds(this);
 
+        // get all of the song names
         final String[][] soundNames = new String[numCampuses][];
         soundNames[0] = MediaFactory.getCentralSoundNames();
+        soundNames[3] = MediaFactory.getNorthSoundNames();
 
+        // initialize the intensity arrays
         intensitiesTo = new double[numCampuses][];
         intensitiesAt = new double[numCampuses][];
 
+        // initialize all intensities to 0s for the existing sounds
         for(int i = 0; i < sounds.length; i++){
             if(sounds[i] != null) {
-                // intialize all intensities to 0s
                 intensitiesAt[i] = new double[sounds[i].length];
                 intensitiesTo[i] = new double[sounds[i].length];
             } else {
@@ -82,15 +88,19 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        gpsText = "NA";
+        // the initial status text
+        gpsText = "No GPS Data Availible Yet";
 
+        // get the textview holding the status message
         gps_output = (TextView)findViewById(R.id.gps_info);
 
+        // add all of the locations to the map view
         mapView = (MapView) findViewById(R.id.mapView);
         for(int i = 0; i < locations.length; i++) {
             mapView.addLocation(locations[i]);
         }
 
+        // add a listener to the view toggle button to toggle the map view
         final Button button = (Button) findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -102,8 +112,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // hide the map view
         mapView.setVisibility(View.INVISIBLE);
 
+        // a handler to update the gps text
         textHandler = new Handler() {
             public void handleMessage(Message msg) {
                 System.out.println(gpsText);
@@ -111,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
+        // a handler to update the map view
         redrawHandler = new Handler() {
             public void handleMessage(Message msg) {
                 mapView.invalidate();
@@ -119,6 +132,7 @@ public class MainActivity extends AppCompatActivity {
 
         final MainActivity mainActivity = this;
 
+        // new task to query the gps every second and find location.
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
@@ -127,13 +141,14 @@ public class MainActivity extends AppCompatActivity {
                 mapView.setLng(pos[1]);
                 redrawHandler.obtainMessage(1).sendToTarget();
 
-                // loop through all locations
+                gpsText = "Location: " + pos[0] + "," + pos[1];
+
+                // loop through all locations and try to find the current location
                 for(int i = 0; i < locations.length; i++) {
                     Place p = locations[i].getCurrentPlace(pos[0], pos[1]);
                     if(p != null) {
                         String buildingName = p.getValue(locations[i].columnIndex("Building"));
-                        gpsText = "Location: " + pos[0] + "," + pos[1] + "\nCurrently In: " + (p == null ? "NA" : buildingName);
-                        textHandler.obtainMessage(1).sendToTarget();
+                        gpsText += "\nCurrently In: " + (p == null ? "NA" : buildingName);
 
                         // set the new target intensities
                         for(int j = 0; j < intensitiesTo[i].length; j++) {
@@ -151,12 +166,13 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     }
                 }
+
+                textHandler.obtainMessage(1).sendToTarget();
             }
         };
 
         Timer timer = new Timer();
         timer.schedule(task, 0, 1000);
-
     }
 
     public void fadeSoundsTo(int newCamp) {
