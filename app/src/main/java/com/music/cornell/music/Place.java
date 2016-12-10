@@ -13,11 +13,15 @@ public class Place {
     }
 
     public String getValue(int i) {
-        return this.values[i];
+        if(i < 0 || i >= values.length){
+            return "";
+        } else {
+            return this.values[i];
+        }
     }
 
     public double getValueAsDouble(int i) {
-        if(i < 0){
+        if(i < 0 || i >= values.length){
             return 0.0;
         } else {
             return Double.parseDouble(this.values[i]);

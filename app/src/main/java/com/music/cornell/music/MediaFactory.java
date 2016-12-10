@@ -46,6 +46,15 @@ public class MediaFactory {
         return nor;
     }
 
+    public static MediaPlayer[] createEngSounds(Context context) {
+        MediaPlayer[] eng = new MediaPlayer[3];
+        eng[0] = MediaPlayer.create(context, R.raw.the_cornell_theme);
+        eng[1] = MediaPlayer.create(context, R.raw.piano_store);
+        eng[2] = MediaPlayer.create(context, R.raw.sage_bass);
+
+        return eng;
+    }
+
     public static String[] getCentralSoundNames() {
         String[] names = new String[15];
         names[0] = "the_cornell_theme";
@@ -78,6 +87,15 @@ public class MediaFactory {
         names[7] = "north_dining";
         names[8] = "north_guitar";
         names[9] = "program_house";
+
+        return names;
+    }
+
+    public static String[] getEngSoundNames() {
+        String[] names = new String[3];
+        names[0] = "the_cornell_theme";
+        names[1] = "piano_store";
+        names[2] = "sage_bass";
 
         return names;
     }
