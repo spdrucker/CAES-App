@@ -16,8 +16,9 @@ import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
 
-    // TODO lock rotation to portrait
     // TODO fix multiple songs being out of sync
+
+    // TODO lock rotation to portrait
     // TODO Don't restart when switching buildings, put loop creator inside new campus settor
 
     // indicies:
@@ -40,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Timer currentTimer;
 
-    private double loopSeconds[] = {236.31};
+    private double loopSeconds[] = {236.31,10.0,10.0,10.0,10.0};
 
     private int currentCampus = -1;
 
@@ -142,28 +143,10 @@ public class MainActivity extends AppCompatActivity {
                         if(lastPlace == null || lastPlace != p) {
                             lastPlace = p;
 
+                            // if we have the sounds for this campus
                             if(sounds[i] != null) {
                                 fadeSoundsTo(i);
                             }
-
-//                            for(int vol = 0; vol < 100; vol++) {
-//                                for (int j = 0; j < sounds.length; j++) {
-//                                    for(int k = 0; k < sounds[j].length; k++) {
-//                                        if(intensitiesAt[j][k] < intensitiesTo[j][k]) {
-//                                            intensitiesAt[j][k]+=0.01;
-//                                        } else if(intensitiesAt[j][k] > intensitiesTo[j][k]) {
-//                                            intensitiesAt[j][k]-=0.01;
-//                                        }
-//                                        sounds[j][k].setVolume((float) intensitiesAt[j][k], (float) intensitiesAt[j][k]);
-//                                    }
-//                                }
-//
-//                                try {
-//                                    Thread.sleep(10);
-//                                } catch (InterruptedException e) {
-//                                    e.printStackTrace();
-//                                }
-//                            }
                         }
                         break;
                     }
@@ -173,17 +156,6 @@ public class MainActivity extends AppCompatActivity {
 
         Timer timer = new Timer();
         timer.schedule(task, 0, 1000);
-
-//        double[] pos = gps.getPosition();
-//        Place p = locations.getCurrentPlace(pos[0], pos[1]);
-//
-//        System.out.println(pos[0]+","+pos[1]);
-//        System.out.println(p.getValue(locations.columnIndex("Building")));
-
-//        double drumIntensity = p.getValueAsDouble(locations.columnIndex("drum1"));
-//
-//        MediaPlayer mp1 = MediaPlayer.create(this, R.raw.sampleaccoustic);
-//        mp1.start();
 
     }
 
@@ -213,38 +185,28 @@ public class MainActivity extends AppCompatActivity {
 
             // start the new campus sounds
             for(int i = 0; i < sounds[currentCampus].length; i++) {
-                sounds[currentCampus][i].start();
+                // sounds[currentCampus][i].start();
                 sounds[currentCampus][i].setLooping(false);
                 sounds[currentCampus][i].setVolume(0,0);
             }
 
-            System.out.println("started new sounds");
+            // set the new looper
+            TimerTask loopTask = new TimerTask() {
+                @Override
+                public void run() {
+                    for (int j = 0; j < sounds[currentCampus].length; j++) {
+                        System.out.println(sounds[currentCampus][j].getDuration()+","+sounds[currentCampus][j].getCurrentPosition());
+                        sounds[currentCampus][j].start();
+                        sounds[currentCampus][j].seekTo(0);
+                    }
+                }
+            };
+
+            currentTimer = new Timer();
+            currentTimer.schedule(loopTask, 0, (int) (loopSeconds[currentCampus]*1000));
         }
 
-//        for(int j = 0; j < sounds[i].length; j++) {
-//            Audio.startSound(sounds[i][j]);
-//            intensitiesAt[i][j] = 0.0;
-//        }
-
-        // set the new looper
-        TimerTask loopTask = new TimerTask() {
-            @Override
-            public void run() {
-                System.out.println("looped");
-                for (int j = 0; j < sounds[currentCampus].length; j++) {
-                    System.out.println(sounds[currentCampus][j].getDuration()+","+sounds[currentCampus][j].getCurrentPosition());
-                    sounds[currentCampus][j].start();
-                    sounds[currentCampus][j].seekTo(0);
-                }
-            }
-        };
-
-        currentTimer = new Timer();
-        currentTimer.schedule(loopTask, 0, (int) (loopSeconds[currentCampus]*1000));
-
         fadeCurrentSounds();
-
-        System.out.println("faded new sounds");
     }
 
     // fade the current sounds to their necessary positions
