@@ -42,7 +42,7 @@ public class MediaFactory {
         nor[7] = MediaPlayer.create(context, R.raw.north_dining);
         nor[8] = MediaPlayer.create(context, R.raw.north_guitar);
         nor[9] = MediaPlayer.create(context, R.raw.program_house);
-        
+
         return nor;
     }
 
@@ -67,7 +67,7 @@ public class MediaFactory {
     }
 
     public static String[] getNorthSoundNames() {
-        String[] names = new String[15];
+        String[] names = new String[10];
         names[0] = "balch_full";
         names[1] = "castle";
         names[2] = "ckb";
