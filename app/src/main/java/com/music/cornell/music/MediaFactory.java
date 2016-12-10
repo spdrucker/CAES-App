@@ -30,6 +30,22 @@ public class MediaFactory {
         return cent;
     }
 
+    public static MediaPlayer[] createNorthSounds(Context context) {
+        MediaPlayer[] nor = new MediaPlayer[10];
+        nor[0] = MediaPlayer.create(context, R.raw.balch_full);
+        nor[1] = MediaPlayer.create(context, R.raw.castle);
+        nor[2] = MediaPlayer.create(context, R.raw.ckb);
+        nor[3] = MediaPlayer.create(context, R.raw.donlon);
+        nor[4] = MediaPlayer.create(context, R.raw.helen_newman);
+        nor[5] = MediaPlayer.create(context, R.raw.mews);
+        nor[6] = MediaPlayer.create(context, R.raw.nameless_building_blues);
+        nor[7] = MediaPlayer.create(context, R.raw.north_dining);
+        nor[8] = MediaPlayer.create(context, R.raw.north_guitar);
+        nor[9] = MediaPlayer.create(context, R.raw.program_house);
+        
+        return nor;
+    }
+
     public static String[] getCentralSoundNames() {
         String[] names = new String[15];
         names[0] = "the_cornell_theme";
@@ -47,6 +63,22 @@ public class MediaFactory {
         names[12] = "uris_hall";
         names[13] = "ives";
         names[14] = "teagle";
+        return names;
+    }
+
+    public static String[] getNorthSoundNames() {
+        String[] names = new String[15];
+        names[0] = "balch_full";
+        names[1] = "castle";
+        names[2] = "ckb";
+        names[3] = "donlon";
+        names[4] = "helen_newman";
+        names[5] = "mews";
+        names[6] = "nameless_building_blues";
+        names[7] = "north_dining";
+        names[8] = "north_guitar";
+        names[9] = "program_house";
+
         return names;
     }
 }
