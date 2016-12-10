@@ -46,6 +46,7 @@ public class MediaFactory {
         return nor;
     }
 
+<<<<<<< HEAD
     public static MediaPlayer[] createWestSounds(Context context) {
         MediaPlayer[] west = new MediaPlayer[9];
         west[0] = MediaPlayer.create(context, R.raw.bass);
@@ -59,6 +60,15 @@ public class MediaFactory {
         west[8] = MediaPlayer.create(context, R.raw.synth);
 
         return west;
+=======
+    public static MediaPlayer[] createEngSounds(Context context) {
+        MediaPlayer[] eng = new MediaPlayer[3];
+        eng[0] = MediaPlayer.create(context, R.raw.the_cornell_theme);
+        eng[1] = MediaPlayer.create(context, R.raw.piano_store);
+        eng[2] = MediaPlayer.create(context, R.raw.sage_bass);
+
+        return eng;
+>>>>>>> 4d26f4aad9efe64901829a1ec465ee8d7e517355
     }
 
     public static String[] getCentralSoundNames() {
@@ -97,6 +107,7 @@ public class MediaFactory {
         return names;
     }
 
+<<<<<<< HEAD
     public static String[] getWestSoundNames() {
         String[] names = new String[9];
         names[0] = "bass";
@@ -108,6 +119,13 @@ public class MediaFactory {
         names[6] = "ride";
         names[7] = "string";
         names[8] = "synth";
+=======
+    public static String[] getEngSoundNames() {
+        String[] names = new String[3];
+        names[0] = "the_cornell_theme";
+        names[1] = "piano_store";
+        names[2] = "sage_bass";
+>>>>>>> 4d26f4aad9efe64901829a1ec465ee8d7e517355
 
         return names;
     }

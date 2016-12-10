@@ -19,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
 
     // TODO fix multiple songs being out of sync
 
+    // done:
     // TODO lock rotation to portrait
     // TODO Don't restart when switching buildings, put loop creator inside new campus settor
 
@@ -42,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Timer currentTimer;
 
-    private double loopSeconds[] = {236.31,10.0,10.0,10.0,10.0};
+    private double loopSeconds[] = {236.31,10.0,10.0,236.1,10.0};
 
     private int currentCampus = -1;
 
@@ -59,18 +60,20 @@ public class MainActivity extends AppCompatActivity {
         final LocationHolder[] locations = new LocationHolder[numCampuses];
         locations[0] = new LocationHolder(this, R.raw.central_data_songs, "Average radius", "Latitude", "Longitude", "Building");
         locations[1] = new LocationHolder(this, R.raw.ag_quad_data, "Radius", "Latitude", "Longitude", "Building");
-        locations[2] = new LocationHolder(this, R.raw.eng_quad_data, "Radius", "Latitude", "Longitude", "Building");
+        locations[2] = new LocationHolder(this, R.raw.eng_quad_test, "Radius", "Latitude", "Longitude", "Building");
         locations[3] = new LocationHolder(this, R.raw.north_data, "Radius", "Latitude", "Longitude", "Building");
         locations[4] = new LocationHolder(this, R.raw.west_data, "Radius", "Latitude", "Longitude", "Building");
 
         // get all of the sound files
         sounds = new MediaPlayer[numCampuses][];
         sounds[0] = MediaFactory.createCentralSounds(this);
+        sounds[2] = MediaFactory.createEngSounds(this);
         sounds[3] = MediaFactory.createNorthSounds(this);
 
         // get all of the song names
         final String[][] soundNames = new String[numCampuses][];
         soundNames[0] = MediaFactory.getCentralSoundNames();
+        soundNames[2] = MediaFactory.getEngSoundNames();
         soundNames[3] = MediaFactory.getNorthSoundNames();
 
         // initialize the intensity arrays
@@ -123,6 +126,9 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
+        // update the status text
+        textHandler.obtainMessage(1).sendToTarget();
+
         // a handler to update the map view
         redrawHandler = new Handler() {
             public void handleMessage(Message msg) {
@@ -142,6 +148,8 @@ public class MainActivity extends AppCompatActivity {
                 redrawHandler.obtainMessage(1).sendToTarget();
 
                 gpsText = "Location: " + pos[0] + "," + pos[1];
+
+                boolean setPlace = false;
 
                 // loop through all locations and try to find the current location
                 for(int i = 0; i < locations.length; i++) {
@@ -163,8 +171,14 @@ public class MainActivity extends AppCompatActivity {
                                 fadeSoundsTo(i);
                             }
                         }
+
+                        setPlace = true;
                         break;
                     }
+                }
+
+                if(!setPlace) {
+                    gpsText += "\nNot in a building.";
                 }
 
                 textHandler.obtainMessage(1).sendToTarget();
@@ -187,7 +201,6 @@ public class MainActivity extends AppCompatActivity {
                     intensitiesTo[currentCampus][i] = 0;
                 }
 
-                System.out.println("fading current");
                 // fade out the current campus songs
                 fadeCurrentSounds();
 
@@ -213,7 +226,11 @@ public class MainActivity extends AppCompatActivity {
                     for (int j = 0; j < sounds[currentCampus].length; j++) {
                         System.out.println(sounds[currentCampus][j].getDuration()+","+sounds[currentCampus][j].getCurrentPosition());
                         sounds[currentCampus][j].start();
-                        sounds[currentCampus][j].seekTo(0);
+                        if(j == 0) {
+                            sounds[currentCampus][0].seekTo(0);
+                        } else {
+                            sounds[currentCampus][j].seekTo(sounds[currentCampus][0].getCurrentPosition());
+                        }
                     }
                 }
             };
