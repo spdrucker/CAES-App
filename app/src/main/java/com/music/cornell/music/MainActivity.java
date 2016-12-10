@@ -62,19 +62,21 @@ public class MainActivity extends AppCompatActivity {
         locations[1] = new LocationHolder(this, R.raw.ag_quad_data, "Radius", "Latitude", "Longitude", "Building");
         locations[2] = new LocationHolder(this, R.raw.eng_quad_test, "Radius", "Latitude", "Longitude", "Building");
         locations[3] = new LocationHolder(this, R.raw.north_data, "Radius", "Latitude", "Longitude", "Building");
-        locations[4] = new LocationHolder(this, R.raw.west_data, "Radius", "Latitude", "Longitude", "Building");
+        locations[4] = new LocationHolder(this, R.raw.west_campus_with_songs, "Radius", "Latitude", "Longitude", "Building");
 
         // get all of the sound files
         sounds = new MediaPlayer[numCampuses][];
         sounds[0] = MediaFactory.createCentralSounds(this);
         sounds[2] = MediaFactory.createEngSounds(this);
         sounds[3] = MediaFactory.createNorthSounds(this);
+        sounds[4] = MediaFactory.createWestSounds(this);
 
         // get all of the song names
         final String[][] soundNames = new String[numCampuses][];
         soundNames[0] = MediaFactory.getCentralSoundNames();
         soundNames[2] = MediaFactory.getEngSoundNames();
         soundNames[3] = MediaFactory.getNorthSoundNames();
+        soundNames[4] = MediaFactory.getWestSoundNames();
 
         // initialize the intensity arrays
         intensitiesTo = new double[numCampuses][];

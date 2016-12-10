@@ -60,6 +60,7 @@ public class MediaFactory {
         west[8] = MediaPlayer.create(context, R.raw.synth);
 
         return west;
+    }
 
     public static MediaPlayer[] createEngSounds(Context context) {
         MediaPlayer[] eng = new MediaPlayer[3];
@@ -119,6 +120,9 @@ public class MediaFactory {
         names[6] = "ride";
         names[7] = "string";
         names[8] = "synth";
+
+        return names;
+    }
 
     public static String[] getEngSoundNames() {
         String[] names = new String[3];
