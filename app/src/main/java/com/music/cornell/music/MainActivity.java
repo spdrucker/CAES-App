@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Timer currentTimer;
 
-    private double loopSeconds[] = {236.31,10.0,10.0,236.1,10.0};
+    private double loopSeconds[] = {236.31,10.0,236.1,236.31,61.0};
 
     private int currentCampus = -1;
 
